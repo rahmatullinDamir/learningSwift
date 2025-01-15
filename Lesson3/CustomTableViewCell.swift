@@ -21,6 +21,7 @@ class CustomTableViewCell: UITableViewCell {
         label.numberOfLines = .zero
         return label
     }()
+    
     lazy var ageTitle: UILabel = {
         var label = UILabel()
         label.translatesAutoresizingMaskIntoConstraints = false
@@ -37,8 +38,8 @@ class CustomTableViewCell: UITableViewCell {
         var mainStackView = UIStackView()
         mainStackView.translatesAutoresizingMaskIntoConstraints = false
         mainStackView.axis = .vertical
+        mainStackView.alignment = .leading
         mainStackView.distribution = .fill
-        mainStackView.alignment = .fill
         return mainStackView
     }()
     
@@ -70,20 +71,18 @@ class CustomTableViewCell: UITableViewCell {
         mainStackView.addArrangedSubview(subtitle)
         
         NSLayoutConstraint.activate([
-            image.leadingAnchor.constraint(equalTo: contentView.safeAreaLayoutGuide.leadingAnchor),
+            image.leadingAnchor.constraint(equalTo: contentView.safeAreaLayoutGuide.leadingAnchor, constant: 16),
             image.centerYAnchor.constraint(equalTo: contentView.centerYAnchor),
-//            image.topAnchor.constraint(equalTo: contentView.safeAreaLayoutGuide.topAnchor),
-//            image.bottomAnchor.constraint(equalTo: contentView.safeAreaLayoutGuide.bottomAnchor),
             image.heightAnchor.constraint(equalToConstant: 50),
             image.widthAnchor.constraint(equalToConstant: 50),
            
-            ageTitle.trailingAnchor.constraint(equalTo: contentView.safeAreaLayoutGuide.trailingAnchor),
+            ageTitle.trailingAnchor.constraint(equalTo: contentView.safeAreaLayoutGuide.trailingAnchor, constant: -16),
             ageTitle.topAnchor.constraint(equalTo: contentView.safeAreaLayoutGuide.topAnchor),
             ageTitle.bottomAnchor.constraint(equalTo: contentView.safeAreaLayoutGuide.bottomAnchor),
-//            ageTitle.centerYAnchor.constraint(equalTo: contentView.centerYAnchor),
+            ageTitle.centerYAnchor.constraint(equalTo: contentView.centerYAnchor),
             
             mainStackView.leadingAnchor.constraint(equalTo: image.trailingAnchor),
-            mainStackView.trailingAnchor.constraint(equalTo: ageTitle.leadingAnchor),
+            mainStackView.trailingAnchor.constraint(equalTo: ageTitle.leadingAnchor, constant: -16),
             mainStackView.topAnchor.constraint(equalTo: contentView.safeAreaLayoutGuide.topAnchor, constant: 16),
             mainStackView.bottomAnchor.constraint(equalTo: contentView.safeAreaLayoutGuide.bottomAnchor, constant: -16),
         ])

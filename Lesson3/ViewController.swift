@@ -8,11 +8,14 @@
 import UIKit
 
 class ViewController: UIViewController {
+    enum TableSections {
+        case main
+        case secondary
+    }
     
     lazy var tableView: UITableView = {
         var tableView = UITableView()
         tableView.translatesAutoresizingMaskIntoConstraints = false
-        tableView.dataSource = self
         tableView.delegate = self
         tableView.separatorStyle = .none
         tableView.estimatedRowHeight = 140
@@ -22,13 +25,55 @@ class ViewController: UIViewController {
         
     }()
     
-    var dataSource: [User] = Array(Array(repeating: User(name: "Damir", surname: "Rahmatullin, Rahmatullin, Rahmatullin, Rahmatullin, Rahmatullin, Rahmatullin, Rahmatullin, Rahmatullin, Rahmatullin, Rahmatullin, Rahmatullin, Rahmatullin, Rahmatullin, Rahmatullin, Rahmatullin, Rahmatullin", age: "20", image: UIImage(resource: .avatar)), count: 20))
+    var dataSource: UITableViewDiffableDataSource<TableSections, User>?
+    var users: [User] = []
     
     override func viewDidLoad() {
         super.viewDidLoad()
         view.addSubview(tableView)
+        view.backgroundColor = .white
+        
+        for _ in 0 ..< 5 {
+            users.append(User(name: "Damir", surname: "Rahmatullin, Rahmatullin, Rahmatullin, Rahmatullin, Rahmatullin, Rahmatullin, Rahmatullin, Rahmatullin, Rahmatullin, Rahmatullin, Rahmatullin, Rahmatullin, Rahmatullin, Rahmatullin, Rahmatullin, Rahmatullin", age: "\(Int.random(in: 0 ..< 100))", image: UIImage(resource: .avatar)))
+        }
+        
         setupLayout()
+        setupDataSource()
+        setupNavigationBar()
     }
+    
+    
+    func setupNavigationBar() {
+        let editAction = UIAction { UIAction in
+            self.tableView.isEditing.toggle()
+        }
+        
+        let addAction = UIAction { UIAction in
+            guard var snapashot = self.dataSource?.snapshot() else {return}
+            snapashot.appendItems([User(name: "Ivan", surname: "Urgant!", age: "\(Int.random(in: 0..<100))", image: UIImage(resource: .avatar))], toSection: .secondary)
+            self.dataSource?.apply(snapashot, animatingDifferences: true)
+        }
+        navigationItem.title = "Main"
+        navigationItem.leftBarButtonItem = UIBarButtonItem(systemItem: .edit, primaryAction: editAction)
+        navigationItem.rightBarButtonItem = UIBarButtonItem(systemItem: .add, primaryAction: addAction)
+        
+    }
+    func setupDataSource () {
+        dataSource = UITableViewDiffableDataSource(tableView: tableView, cellProvider: { tableView, indexPath, itemIdentifier in
+            let cell = tableView.dequeueReusableCell(withIdentifier: CustomTableViewCell.reuseIdentifier) as! CustomTableViewCell
+            cell.configureCell(user: itemIdentifier)
+            return cell
+        })
+        updateSnapshotWithUsers(users: users, animate: false)
+    }
+    
+    func updateSnapshotWithUsers(users: [User], animate: Bool) {
+        var snapshot = NSDiffableDataSourceSnapshot<TableSections, User>()
+        snapshot.appendSections([.main, .secondary])
+        snapshot.appendItems(users)
+        dataSource?.apply(snapshot, animatingDifferences: animate)
+    }
+    
 
     func setupLayout() {
         NSLayoutConstraint.activate([
@@ -40,17 +85,8 @@ class ViewController: UIViewController {
     }
 
 }
-extension ViewController: UITableViewDelegate, UITableViewDataSource {
-    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        dataSource.count
-    }
-    
-    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let cell = tableView.dequeueReusableCell(withIdentifier: CustomTableViewCell.reuseIdentifier) as! CustomTableViewCell
-        cell.configureCell(user: dataSource[indexPath.row])
-        return cell
-    }
-    
+extension ViewController: UITableViewDelegate {
+
     
 }
 

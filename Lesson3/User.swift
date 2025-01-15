@@ -8,7 +8,8 @@
 import Foundation
 import UIKit
 
-struct User {
+struct User: Hashable, Identifiable {
+    let id: UUID = UUID()
     let name: String
     let surname: String
     let age: String
