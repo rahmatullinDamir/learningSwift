@@ -7,6 +7,10 @@
 
 import UIKit
 
+protocol showAlert: AnyObject {
+    func showAlert(title: String, message: String)
+}
+
 class CustomTableViewCell: UITableViewCell {
     
     lazy var title: UILabel = {
@@ -43,6 +47,23 @@ class CustomTableViewCell: UITableViewCell {
         return mainStackView
     }()
     
+    weak var delegate: showAlert?
+    
+    lazy var alertButton: UIButton = {
+        let button = UIButton()
+        button.translatesAutoresizingMaskIntoConstraints = false
+        button.setImage(.actions, for: .normal)
+        var alertAction = UIAction(handler: { UIAction in
+            self.delegate?.showAlert(title: "Poshel nahyi", message: "\(self.username!)")
+        })
+        
+        button.addAction(alertAction, for: .touchUpInside)
+        
+        return button
+    }()
+    
+    var username: String?
+    
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
         setupLayout()
@@ -61,12 +82,16 @@ class CustomTableViewCell: UITableViewCell {
         subtitle.text = user.surname
         ageTitle.text = user.age
         image.image = user.image
+        username = user.name
     }
+    
     func setupLayout() {
         guard image.superview == nil else { return }
         contentView.addSubview(mainStackView)
         contentView.addSubview(image)
         contentView.addSubview(ageTitle)
+        contentView.addSubview(alertButton)
+        
         mainStackView.addArrangedSubview(title)
         mainStackView.addArrangedSubview(subtitle)
         
@@ -78,8 +103,10 @@ class CustomTableViewCell: UITableViewCell {
            
             ageTitle.trailingAnchor.constraint(equalTo: contentView.safeAreaLayoutGuide.trailingAnchor, constant: -16),
             ageTitle.topAnchor.constraint(equalTo: contentView.safeAreaLayoutGuide.topAnchor),
-            ageTitle.bottomAnchor.constraint(equalTo: contentView.safeAreaLayoutGuide.bottomAnchor),
             ageTitle.centerYAnchor.constraint(equalTo: contentView.centerYAnchor),
+            
+            alertButton.centerYAnchor.constraint(equalTo: contentView.centerYAnchor, constant: 24),
+            alertButton.trailingAnchor.constraint(equalTo: contentView.safeAreaLayoutGuide.trailingAnchor, constant: -16),
             
             mainStackView.leadingAnchor.constraint(equalTo: image.trailingAnchor),
             mainStackView.trailingAnchor.constraint(equalTo: ageTitle.leadingAnchor, constant: -16),

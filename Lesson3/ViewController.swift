@@ -7,6 +7,7 @@
 
 import UIKit
 
+
 class ViewController: UIViewController {
     enum TableSections {
         case main
@@ -34,7 +35,7 @@ class ViewController: UIViewController {
         view.backgroundColor = .white
         
         for _ in 0 ..< 5 {
-            users.append(User(name: "Damir", surname: "Rahmatullin, Rahmatullin, Rahmatullin, Rahmatullin, Rahmatullin, Rahmatullin, Rahmatullin, Rahmatullin, Rahmatullin, Rahmatullin, Rahmatullin, Rahmatullin, Rahmatullin, Rahmatullin, Rahmatullin, Rahmatullin", age: "\(Int.random(in: 0 ..< 100))", image: UIImage(resource: .avatar)))
+            users.append(User(id: UUID(), name: "Damir", surname: "Rahmatullin, Rahmatullin, Rahmatullin, Rahmatullin, Rahmatullin, Rahmatullin, Rahmatullin, Rahmatullin, Rahmatullin, Rahmatullin, Rahmatullin, Rahmatullin, Rahmatullin, Rahmatullin, Rahmatullin, Rahmatullin", age: "\(Int.random(in: 0 ..< 100))", image: UIImage(resource: .avatar)))
         }
         
         setupLayout()
@@ -49,9 +50,13 @@ class ViewController: UIViewController {
         }
         
         let addAction = UIAction { UIAction in
-            guard var snapashot = self.dataSource?.snapshot() else {return}
-            snapashot.appendItems([User(name: "Ivan", surname: "Urgant!", age: "\(Int.random(in: 0..<100))", image: UIImage(resource: .avatar))], toSection: .secondary)
-            self.dataSource?.apply(snapashot, animatingDifferences: true)
+            if var snapshot = self.dataSource?.snapshot() {
+                let user = User(id: UUID(), name: "Ivan", surname: "Urgant!", age: "\(Int.random(in: 0..<100))", image: UIImage(resource: .avatar))
+                snapshot.appendItems([user], toSection: .secondary)
+                self.users.append(user)
+                self.dataSource?.apply(snapshot)
+            }
+
         }
         navigationItem.title = "Main"
         navigationItem.leftBarButtonItem = UIBarButtonItem(systemItem: .edit, primaryAction: editAction)
@@ -62,8 +67,13 @@ class ViewController: UIViewController {
         dataSource = UITableViewDiffableDataSource(tableView: tableView, cellProvider: { tableView, indexPath, itemIdentifier in
             let cell = tableView.dequeueReusableCell(withIdentifier: CustomTableViewCell.reuseIdentifier) as! CustomTableViewCell
             cell.configureCell(user: itemIdentifier)
+            cell.delegate = self
             return cell
         })
+        tableView.dataSource = dataSource
+  
+        dataSource?.defaultRowAnimation = .automatic
+        
         updateSnapshotWithUsers(users: users, animate: false)
     }
     
@@ -83,10 +93,39 @@ class ViewController: UIViewController {
             tableView.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor)
         ])
     }
+    
+    
 
 }
 extension ViewController: UITableViewDelegate {
-
-    
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        if let user = dataSource?.itemIdentifier(for: indexPath) {
+            let detailView = DetailViewController(with: user)
+            detailView.editUserDataDelegate = self
+            navigationController?.pushViewController(detailView, animated: true)
+        }
+        tableView.deselectRow(at: indexPath, animated: true)
+        
+    }
 }
 
+
+extension ViewController: showAlert {
+    func showAlert(title: String, message: String) {
+        let alert = UIAlertController(title: title, message: message, preferredStyle: .alert)
+        
+        let okAction = UIAlertAction(title: "OK", style: .default)
+        
+        alert.addAction(okAction)
+        self.navigationController?.topViewController?.present(alert, animated: true)
+    }
+}
+
+extension ViewController: EditUserDataDelegate {
+    func editUserData(user: User) {
+        guard let userIndex = dataSource?.indexPath(for: user)?.row else { return }
+        users.remove(at: userIndex)
+        users.insert(User(id: user.id, name: "Some name", surname: "Some username", age: "\(Int.random(in: 0..<100))", image: .avatar), at: userIndex)
+        setupDataSource()
+    }
+}

@@ -9,7 +9,7 @@ import Foundation
 import UIKit
 
 struct User: Hashable, Identifiable {
-    let id: UUID = UUID()
+    let id: UUID
     let name: String
     let surname: String
     let age: String
