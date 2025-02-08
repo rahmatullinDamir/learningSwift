@@ -48,6 +48,19 @@ class CustomTableViewCell: UITableViewCell {
     }()
     
     weak var delegate: showAlert?
+    var showAnotherAlert: (() -> Void)?
+    
+    
+    lazy var anotherAlertButton: UIButton = {
+        let action = UIAction { [weak self] UIAction in
+            self?.showAnotherAlert?()
+        }
+        let button = UIButton(type: .system, primaryAction: action)
+        button.translatesAutoresizingMaskIntoConstraints = false
+        button.setTitle("Another Alert", for: .normal)
+        
+        return button
+    }()
     
     lazy var alertButton: UIButton = {
         let button = UIButton()
@@ -91,6 +104,7 @@ class CustomTableViewCell: UITableViewCell {
         contentView.addSubview(image)
         contentView.addSubview(ageTitle)
         contentView.addSubview(alertButton)
+        contentView.addSubview(anotherAlertButton)
         
         mainStackView.addArrangedSubview(title)
         mainStackView.addArrangedSubview(subtitle)
@@ -107,6 +121,9 @@ class CustomTableViewCell: UITableViewCell {
             
             alertButton.centerYAnchor.constraint(equalTo: contentView.centerYAnchor, constant: 24),
             alertButton.trailingAnchor.constraint(equalTo: contentView.safeAreaLayoutGuide.trailingAnchor, constant: -16),
+            
+            anotherAlertButton.centerYAnchor.constraint(equalTo: contentView.centerYAnchor, constant: 36),
+            anotherAlertButton.trailingAnchor.constraint(equalTo: contentView.safeAreaLayoutGuide.trailingAnchor, constant: -16),
             
             mainStackView.leadingAnchor.constraint(equalTo: image.trailingAnchor),
             mainStackView.trailingAnchor.constraint(equalTo: ageTitle.leadingAnchor, constant: -16),

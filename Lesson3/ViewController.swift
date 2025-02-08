@@ -68,6 +68,14 @@ class ViewController: UIViewController {
             let cell = tableView.dequeueReusableCell(withIdentifier: CustomTableViewCell.reuseIdentifier) as! CustomTableViewCell
             cell.configureCell(user: itemIdentifier)
             cell.delegate = self
+            cell.showAnotherAlert = { [weak self] in
+                let alert = UIAlertController(title: "HYI", message: "closure alert!", preferredStyle: .alert)
+                
+                let okAction = UIAlertAction(title: "OK", style: .default)
+                
+                alert.addAction(okAction)
+                self?.navigationController?.topViewController?.present(alert, animated: true)
+            }
             return cell
         })
         tableView.dataSource = dataSource
@@ -94,6 +102,10 @@ class ViewController: UIViewController {
         ])
     }
     
+//    override func viewWillAppear(_ animated: Bool) {
+//        navigationController?.pushViewController(SecondViewController(), animated: true)
+//    }
+//    
     
 
 }
