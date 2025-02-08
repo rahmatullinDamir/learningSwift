@@ -28,6 +28,17 @@ class SecondViewController: UIViewController {
         
         myClosure()
         
+        let numbers = [1, 2, 3, 4]
+        let doubledNumbers = transformArray(numbers, using: {
+            $0 * 2
+        })
+        print(doubledNumbers) // Выведет: [2, 4, 6, 8]
+        
+        
+    }
+    
+    func transformArray(_ array: [Int], using closure: (Int) -> Int) -> [Int] {
+        return array.map(closure)
     }
     
     func calculate(value: Int) -> (() -> Void) {

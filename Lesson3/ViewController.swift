@@ -102,10 +102,10 @@ class ViewController: UIViewController {
         ])
     }
     
-//    override func viewWillAppear(_ animated: Bool) {
-//        navigationController?.pushViewController(SecondViewController(), animated: true)
-//    }
-//    
+    override func viewWillAppear(_ animated: Bool) {
+        navigationController?.pushViewController(SecondViewController(), animated: true)
+    }
+    
     
 
 }
